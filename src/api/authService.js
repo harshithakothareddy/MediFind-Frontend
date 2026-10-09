@@ -24,7 +24,7 @@ export const authService = {
     return { data: { token, user: formatUser(payload) } };
   },
   getCurrentUser: async () => {
-    const response = await axiosInstance.get('/users/me');
+    const response = await axiosInstance.get('/users/me', { _skipAuthRedirect: true });
     return { data: { user: formatUser(unwrap(response)) } };
   },
   register: async (data) => {

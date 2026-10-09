@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 5000,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -69,11 +69,13 @@ axiosInstance.interceptors.response.use(
 
     switch (response.status) {
       case 401:
-        // Session expired
+        // Session expired — only redirect if this is NOT a silent session-restore call
         localStorage.removeItem('medifind_token');
         localStorage.removeItem('medifind_user');
-        toast.error('Your session has expired. Please login again.');
-        window.location.href = '/login?session=expired';
+        if (!error.config?._skipAuthRedirect) {
+          toast.error('Your session has expired. Please login again.');
+          window.location.href = '/login?session=expired';
+        }
         break;
       case 403:
         toast.error('You do not have permission to perform this action.');
