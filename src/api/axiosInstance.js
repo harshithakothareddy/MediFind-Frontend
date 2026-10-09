@@ -68,15 +68,32 @@ axiosInstance.interceptors.response.use(
     }
 
     switch (response.status) {
-      case 401:
-        // Session expired — only redirect if this is NOT a silent session-restore call
+      case 401: {
+        const isAuthRequest = Boolean(config?.url && (
+          config.url.includes('/auth/login') ||
+          config.url.includes('/auth/register') ||
+          config.url.includes('/auth/forgot-password') ||
+          config.url.includes('/auth/reset-password')
+        ));
+        const skipRedirect = Boolean(config?._skipAuthRedirect || isAuthRequest);
+        const isOnAuthPage = typeof window !== 'undefined' && (
+          window.location.pathname === '/login' ||
+          window.location.pathname === '/register' ||
+          window.location.pathname === '/forgot-password'
+        );
+
+        const hadToken = Boolean(localStorage.getItem('medifind_token'));
         localStorage.removeItem('medifind_token');
         localStorage.removeItem('medifind_user');
-        if (!error.config?._skipAuthRedirect) {
+
+        // Only redirect with "session expired" if the user actually had an active token,
+        // is not already on an auth page, and the request wasn't an explicit auth endpoint or silent check.
+        if (!skipRedirect && !isOnAuthPage && hadToken) {
           toast.error('Your session has expired. Please login again.');
           window.location.href = '/login?session=expired';
         }
         break;
+      }
       case 403:
         toast.error('You do not have permission to perform this action.');
         break;

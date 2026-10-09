@@ -17,7 +17,7 @@ const unwrap = (response) => response.data?.data || response.data;
 
 export const authService = {
   login: async (credentials) => {
-    const response = await axiosInstance.post('/auth/login', credentials);
+    const response = await axiosInstance.post('/auth/login', credentials, { _skipAuthRedirect: true });
     const payload = unwrap(response);
     const token = payload?.accessToken || payload?.token;
     if (!token) throw new Error('The server did not return an access token.');
@@ -28,16 +28,16 @@ export const authService = {
     return { data: { user: formatUser(unwrap(response)) } };
   },
   register: async (data) => {
-    const response = await axiosInstance.post('/auth/register', data);
+    const response = await axiosInstance.post('/auth/register', data, { _skipAuthRedirect: true });
     const payload = unwrap(response);
     const token = payload?.accessToken || payload?.token;
     return { data: { token, user: formatUser(payload) } };
   },
-  registerPharmacy: (data) => axiosInstance.post('/auth/register', data),
-  forgotPassword: (email) => axiosInstance.post('/auth/forgot-password', { email }),
-  resetPassword: (data) => axiosInstance.post('/auth/reset-password', data),
-  changePassword: (data) => axiosInstance.put('/auth/change-password', data),
-  logout: () => axiosInstance.post('/auth/logout'),
-  verifyToken: () => axiosInstance.get('/users/me'),
-  refreshToken: () => axiosInstance.post('/auth/refresh'),
+  registerPharmacy: (data) => axiosInstance.post('/auth/register', data, { _skipAuthRedirect: true }),
+  forgotPassword: (email) => axiosInstance.post('/auth/forgot-password', { email }, { _skipAuthRedirect: true }),
+  resetPassword: (data) => axiosInstance.post('/auth/reset-password', data, { _skipAuthRedirect: true }),
+  changePassword: (data) => axiosInstance.put('/auth/change-password', data, { _skipAuthRedirect: true }),
+  logout: () => axiosInstance.post('/auth/logout', {}, { _skipAuthRedirect: true }),
+  verifyToken: () => axiosInstance.get('/users/me', { _skipAuthRedirect: true }),
+  refreshToken: () => axiosInstance.post('/auth/refresh', {}, { _skipAuthRedirect: true }),
 };

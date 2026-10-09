@@ -181,9 +181,23 @@ const LoginPage = () => {
             </div>
 
             {sessionExpired && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 flex items-start gap-2">
-                <span className="text-amber-600 text-xs mt-0.5">⚠</span>
-                <p className="text-amber-700 text-xs">Your session expired. Please login again.</p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-amber-600 text-xs mt-0.5">⚠</span>
+                  <p className="text-amber-700 text-xs">Your session expired. Please login again.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete('session');
+                    navigate({ search: newParams.toString() ? `?${newParams.toString()}` : '' }, { replace: true });
+                  }}
+                  className="text-amber-500 hover:text-amber-700 text-xs font-bold leading-none p-1"
+                  aria-label="Dismiss"
+                >
+                  ✕
+                </button>
               </div>
             )}
 
