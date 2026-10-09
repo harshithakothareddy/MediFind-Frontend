@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -62,7 +62,7 @@ axiosInstance.interceptors.response.use(
 
     if (!response) {
       return Promise.reject({
-        message: 'Unable to reach the API. Check that Spring Boot is running and allows this frontend origin.',
+        message: 'Server is waking up — please wait a moment and try again. (Render free tier takes ~30-50s to start)',
         code: 'NETWORK_ERROR',
       });
     }
