@@ -58,11 +58,11 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    const { response } = error;
+    const { response, config } = error || {};
 
     if (!response) {
       return Promise.reject({
-        message: 'Server is waking up — please wait a moment and try again. (Render free tier takes ~30-50s to start)',
+        message: error?.message || 'Server is waking up — please wait a moment and try again. (Render free tier takes ~30-50s to start)',
         code: 'NETWORK_ERROR',
       });
     }
