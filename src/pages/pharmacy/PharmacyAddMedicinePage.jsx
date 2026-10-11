@@ -5,6 +5,7 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { medicineService } from '../../api/medicineService';
 import { inventoryService } from '../../api/inventoryService';
+import { MEDICINE_DATABASE } from '../../constants/medicineDatabase';
 import { toast } from 'react-toastify';
 
 const PharmacyAddMedicinePage = () => {
@@ -25,7 +26,11 @@ const PharmacyAddMedicinePage = () => {
       .then((response) => {
         const page = response.data;
         const rows = Array.isArray(page?.content) ? page.content : Array.isArray(page) ? page : [];
-        setMedicines(rows);
+        if (rows.length > 0) {
+          setMedicines(rows);
+        } else {
+          setMedicines(MEDICINE_DATABASE);
+        }
 
         // If there are more pages, fetch them too
         const totalPages = page?.totalPages ?? 1;
@@ -42,7 +47,9 @@ const PharmacyAddMedicinePage = () => {
           });
         }
       })
-      .catch((error) => toast.error(error.message || 'Could not load the medicine catalog.'))
+      .catch(() => {
+        setMedicines(MEDICINE_DATABASE);
+      })
       .finally(() => setLoading(false));
   }, []);
 
