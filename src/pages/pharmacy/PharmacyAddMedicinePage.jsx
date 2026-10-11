@@ -20,11 +20,27 @@ const PharmacyAddMedicinePage = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    medicineService.getAll({ page: 0, size: 100, sortBy: 'name' })
+    // Fetch all medicines by first getting page 0 to know total pages, then fetching all
+    medicineService.getAll({ page: 0, size: 500, sortBy: 'name' })
       .then((response) => {
         const page = response.data;
         const rows = Array.isArray(page?.content) ? page.content : Array.isArray(page) ? page : [];
         setMedicines(rows);
+
+        // If there are more pages, fetch them too
+        const totalPages = page?.totalPages ?? 1;
+        if (totalPages > 1) {
+          const extraFetches = Array.from({ length: totalPages - 1 }, (_, i) =>
+            medicineService.getAll({ page: i + 1, size: 500, sortBy: 'name' })
+          );
+          Promise.all(extraFetches).then((responses) => {
+            const extraRows = responses.flatMap((r) => {
+              const p = r.data;
+              return Array.isArray(p?.content) ? p.content : Array.isArray(p) ? p : [];
+            });
+            setMedicines((prev) => [...prev, ...extraRows]);
+          });
+        }
       })
       .catch((error) => toast.error(error.message || 'Could not load the medicine catalog.'))
       .finally(() => setLoading(false));
