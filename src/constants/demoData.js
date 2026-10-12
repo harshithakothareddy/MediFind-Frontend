@@ -92,6 +92,21 @@ export const DEMO_MEDICINES = [
     outOfStockCount: 0,
     imageUrl: null,
   },
+  {
+    id: 7,
+    name: 'Penicillin Tablet',
+    genericName: 'Phenoxymethylpenicillin (Penicillin V)',
+    category: 'Antibiotic',
+    manufacturer: 'Alkem Laboratories Ltd',
+    strength: '500mg',
+    dosageForm: 'Tablet',
+    description: 'Oral penicillin antibiotic tablet for bacterial and streptococcal infections.',
+    pharmaciesCount: 8,
+    availableCount: 6,
+    lowStockCount: 1,
+    outOfStockCount: 1,
+    imageUrl: null,
+  },
 ];
 
 export const DEMO_PHARMACIES = [
