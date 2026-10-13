@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 60000,
+  timeout: 90000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -61,9 +61,14 @@ axiosInstance.interceptors.response.use(
     const { response, config } = error || {};
 
     if (!response) {
+      const isTimeout = error?.code === 'ECONNABORTED' || (typeof error?.message === 'string' && error.message.toLowerCase().includes('timeout'));
+      const fallbackMessage = isTimeout
+        ? 'Server is waking up from sleep mode — please wait a few seconds and try again. (Render free tier takes ~50-70s to start)'
+        : (error?.message || 'Server is waking up — please wait a moment and try again.');
+
       return Promise.reject({
-        message: error?.message || 'Server is waking up — please wait a moment and try again. (Render free tier takes ~30-50s to start)',
-        code: 'NETWORK_ERROR',
+        message: fallbackMessage,
+        code: isTimeout ? 'TIMEOUT_ERROR' : 'NETWORK_ERROR',
       });
     }
 
